@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # A Google OAuth *client ID* is public by design: Vite inlines it into the JS bundle
+  # and every visitor's browser sends it to Google. Netlify's secret scanner flags it
+  # anyway, so exclude this one key from scanning. Real secrets never belong in VITE_ vars.
+  SECRETS_SCAN_OMIT_KEYS = "VITE_GOOGLE_CLIENT_ID"
+
+# Single-page app: let React Router handle every path (e.g. /feed, /p/123 on refresh).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

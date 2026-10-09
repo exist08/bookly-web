@@ -8,9 +8,8 @@
  * in Google Cloud Console (e.g. http://localhost:5173).
  */
 
-export const GOOGLE_CLIENT_ID: string =
-  import.meta.env.VITE_GOOGLE_CLIENT_ID ??
-  '153004524173-79farmg2350m8opb24ehebbfvb589kut.apps.googleusercontent.com';
+/** Set VITE_GOOGLE_CLIENT_ID in .env locally and in Netlify's environment variables. */
+export const GOOGLE_CLIENT_ID: string = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
 // --- minimal GIS typings (only what we use) ---
 type CredentialResponse = { credential: string; select_by?: string };
@@ -53,6 +52,10 @@ let currentHandler: ((credential: string) => void) | null = null;
 export function loadGoogle(): Promise<GoogleAccountsId> {
   if (loading) return loading;
   loading = new Promise<GoogleAccountsId>((resolve, reject) => {
+    if (!GOOGLE_CLIENT_ID) {
+      reject(new Error('Google sign-in isn’t configured (VITE_GOOGLE_CLIENT_ID is missing).'));
+      return;
+    }
     const ready = () => {
       const id = window.google?.accounts?.id;
       if (!id) {
