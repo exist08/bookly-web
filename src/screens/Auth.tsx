@@ -2,11 +2,11 @@ import { useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router';
 import { Button, TextField, TopBar } from '../components/ui';
 import { GoogleSignInButton } from '../components/GoogleSignInButton';
-import { toast } from '../components/Toast';
+import { toast } from '../state/toast';
 import { useAuth } from '../hooks/queries';
 import { ApiError } from '../data/api';
 import { DEMO_EMAIL, DEMO_PASSWORD } from '../data/seed';
-import { go } from '../store/transition';
+import { go } from '../navigation/transition';
 import { AuthLayout } from './AuthLayout';
 
 type Mode = 'signin' | 'signup';

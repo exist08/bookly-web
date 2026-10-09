@@ -3,7 +3,7 @@ import { PostCard } from '../components/PostCard';
 import { Avatar, EmptyShelf, Em, ErrorState, PostCardSkeleton, Wordmark } from '../components/ui';
 import { useFeed, useMe } from '../hooks/queries';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
-import { go } from '../store/transition';
+import { go } from '../navigation/transition';
 
 export function Feed() {
   const { data: me } = useMe();

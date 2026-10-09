@@ -23,7 +23,7 @@
       // Apply the saved theme before first paint so there is no light flash in dark mode.
       (function () {
         try {
-          var m = localStorage.getItem('bookly.theme') || 'system';
+          var m = (localStorage.getItem('bookly.theme') || 'system').replace(/"/g, ''); // stored as JSON by Jotai
           var dark = m === 'dark' || (m === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
           document.documentElement.dataset.theme = dark ? 'dark' : 'light';
         } catch (e) {}

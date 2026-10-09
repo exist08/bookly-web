@@ -17,7 +17,7 @@ import type {
 import { commit, getDb } from './mockDb';
 import { decodeIdToken, googleSignOut } from '../auth/google';
 import { AVATAR_COLORS, COVER_PALETTES } from './seed';
-import { session } from '../store/session';
+import { getUserId } from '../state/session';
 
 export class ApiError extends Error {
   constructor(message: string, public code: string, public field?: string) {
@@ -35,7 +35,7 @@ const USERNAME_RE = /^[a-z0-9._]{3,24}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function me(): User {
-  const id = session.get().userId;
+  const id = getUserId();
   const user = id ? getDb().users.find(u => u.id === id) : undefined;
   if (!user) {
     throw new ApiError('Your session has expired. Please sign in again.', 'unauthorized');
@@ -179,7 +179,7 @@ export async function checkUsername(username: string): Promise<boolean> {
   if (!USERNAME_RE.test(u)) {
     return false;
   }
-  const current = session.get().userId;
+  const current = getUserId();
   return !getDb().users.some(x => x.username === u && x.id !== current);
 }
 
@@ -246,7 +246,7 @@ export async function deleteMe(): Promise<void> {
 
 export async function getFeed(cursor?: string | null): Promise<Page<PostView>> {
   await wait(350, 800);
-  const viewer = session.get().userId;
+  const viewer = getUserId();
   const all = [...getDb().posts].sort(newestFirst);
   const page = paginate(all, cursor, 5);
   return { items: page.items.map(p => view(p, viewer)), nextCursor: page.nextCursor };
@@ -258,7 +258,7 @@ export async function getPost(id: string): Promise<PostView> {
   if (!post) {
     throw new ApiError('This post was deleted.', 'not_found');
   }
-  return view(post, session.get().userId);
+  return view(post, getUserId());
 }
 
 export async function getProfile(userId: string): Promise<ProfileView> {
@@ -277,7 +277,7 @@ export async function getProfile(userId: string): Promise<ProfileView> {
 
 export async function getUserPosts(userId: string, cursor?: string | null): Promise<Page<PostView>> {
   await wait(200, 450);
-  const viewer = session.get().userId;
+  const viewer = getUserId();
   const all = getDb().posts.filter(p => p.authorId === userId).sort(newestFirst);
   const page = paginate(all, cursor, 30);
   return { items: page.items.map(p => view(p, viewer)), nextCursor: page.nextCursor };

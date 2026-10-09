@@ -4,7 +4,7 @@
  * (users, posts, votes) so swapping in the real API only touches api.ts.
  */
 import type { Post, User, VoteValue } from '../types/models';
-import { readJSON, writeJSON } from '../store/storage';
+import { readJSON, writeJSON } from './storage';
 import { DEMO_PASSWORD, seedPosts, seedUsers } from './seed';
 
 interface DbShape {

@@ -2,7 +2,7 @@ import { Outlet, useLocation } from 'react-router';
 import { Icon } from './Icon';
 import { Avatar, Wordmark } from './ui';
 import { useMe } from '../hooks/queries';
-import { go } from '../store/transition';
+import { go } from '../navigation/transition';
 
 /**
  * Signed-in chrome. Phones: a floating bottom tab bar (Feed · Share a book · Shelf).

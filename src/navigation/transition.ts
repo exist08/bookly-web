@@ -1,6 +1,7 @@
-import { useSyncExternalStore } from 'react';
 import { flushSync } from 'react-dom';
 import type { createBrowserRouter } from 'react-router';
+import { store } from '../state/store';
+import { activeCoverAtom, type ActiveCover } from '../state/cover';
 
 type Router = ReturnType<typeof createBrowserRouter>;
 
@@ -13,32 +14,6 @@ type Router = ReturnType<typeof createBrowserRouter>;
  * The browser morphs one into the other on navigation — forwards and back.
  * Browsers without the API simply navigate without the morph.
  */
-interface ActiveCover {
-  key: string;
-  postId: string;
-}
-
-let active: ActiveCover | null = null;
-const listeners = new Set<() => void>();
-
-export const coverTransition = {
-  get: () => active,
-  set(next: ActiveCover | null) {
-    active = next;
-    listeners.forEach(l => l());
-  },
-  subscribe(l: () => void) {
-    listeners.add(l);
-    return () => {
-      listeners.delete(l);
-    };
-  },
-};
-
-export function useActiveCover() {
-  return useSyncExternalStore(coverTransition.subscribe, coverTransition.get, coverTransition.get);
-}
-
 export type NavDirection = 'push' | 'pop' | 'fade' | 'up' | 'down';
 
 const supportsVT = () => typeof document !== 'undefined' && 'startViewTransition' in document;
@@ -62,7 +37,7 @@ export function go(to: string, opts: { dir?: NavDirection; replace?: boolean; co
   const r = routerRef;
   if (opts.cover) {
     // Name the tapped cover *before* the old page is snapshotted.
-    flushSync(() => coverTransition.set(opts.cover!));
+    flushSync(() => store.set(activeCoverAtom, opts.cover!));
   }
   setDirection(opts.dir ?? 'push');
   if (!supportsVT() || reducedMotion()) {

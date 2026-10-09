@@ -2,11 +2,11 @@ import { useState, type FormEvent } from 'react';
 import { AvatarPicker } from '../components/AvatarPicker';
 import { Icon } from '../components/Icon';
 import { Button, Em, TextField } from '../components/ui';
-import { toast } from '../components/Toast';
+import { toast } from '../state/toast';
 import { useAuth, useMe, useUpdateProfile } from '../hooks/queries';
 import { usernameMessage, useUsernameCheck } from '../hooks/useUsernameCheck';
 import { ApiError } from '../data/api';
-import { go } from '../store/transition';
+import { go } from '../navigation/transition';
 
 const suggest = (name: string) => name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.|\.$/g, '').slice(0, 18);
 

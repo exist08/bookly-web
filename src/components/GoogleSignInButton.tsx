@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { loadGoogle, setGoogleCredentialHandler } from '../auth/google';
-import { useTheme } from '../theme/ThemeProvider';
+import { useAtomValue } from 'jotai';
+import { isDarkAtom } from '../state/theme';
 import { GoogleButton } from './ui';
-import { toast } from './Toast';
+import { toast } from '../state/toast';
 
 /**
  * Google's official "Continue with Google" button (GIS renders it in an iframe),
@@ -10,7 +11,7 @@ import { toast } from './Toast';
  * or if it can't — Bookly's own button holds the space so the layout doesn't jump.
  */
 export function GoogleSignInButton({ onCredential, loading }: { onCredential: (credential: string) => void; loading?: boolean }) {
-  const { isDark } = useTheme();
+  const isDark = useAtomValue(isDarkAtom);
   const wrapRef = useRef<HTMLDivElement>(null);
   const slotRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'failed'>('loading');

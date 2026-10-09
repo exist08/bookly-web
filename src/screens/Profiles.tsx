@@ -2,8 +2,9 @@ import { useParams } from 'react-router';
 import { ProfileView } from '../components/ProfileView';
 import { IconButton, TopBar } from '../components/ui';
 import { useMe, useProfile } from '../hooks/queries';
-import { useSession } from '../store/session';
-import { go } from '../store/transition';
+import { useAtomValue } from 'jotai';
+import { userIdAtom } from '../state/session';
+import { go } from '../navigation/transition';
 import { shareProfile } from '../utils/share';
 
 export function Shelf() {
@@ -30,7 +31,7 @@ export function Shelf() {
 
 export function UserProfile() {
   const { userId = '' } = useParams();
-  const { userId: meId } = useSession();
+  const meId = useAtomValue(userIdAtom);
   const { data } = useProfile(userId);
   return (
     <main className="page page--plain">

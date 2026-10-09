@@ -1,41 +1,10 @@
-import { useSyncExternalStore } from 'react';
+import { useAtomValue } from 'jotai';
 import { Icon } from './Icon';
+import { toastsAtom } from '../state/toast';
 
-type Kind = 'info' | 'success' | 'error';
-interface T {
-  id: number;
-  text: string;
-  kind: Kind;
-}
-
-let items: T[] = [];
-let seq = 0;
-const ls = new Set<() => void>();
-const emit = () => ls.forEach(l => l());
-
-function push(text: string, kind: Kind = 'info') {
-  const id = ++seq;
-  items = [...items.slice(-2), { id, text, kind }];
-  emit();
-  setTimeout(() => {
-    items = items.filter(t => t.id !== id);
-    emit();
-  }, 2800);
-}
-
-export const toast = Object.assign((t: string) => push(t), {
-  success: (t: string) => push(t, 'success'),
-  error: (t: string) => push(t, 'error'),
-});
-
+/** Renders the toast list. Push toasts from anywhere with toast() from state/toast. */
 export function Toaster() {
-  const list = useSyncExternalStore(
-    l => {
-      ls.add(l);
-      return () => ls.delete(l);
-    },
-    () => items,
-  );
+  const list = useAtomValue(toastsAtom);
   return (
     <div className="toasts" role="status" aria-live="polite">
       {list.map(t => (

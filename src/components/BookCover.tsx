@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
-import { useActiveCover } from '../store/transition';
+import { useAtomValue } from 'jotai';
+import { activeCoverAtom } from '../state/cover';
 import type { CoverPalette } from '../types/models';
 
 interface Props {
@@ -20,7 +21,7 @@ interface Props {
 
 /** The reader's photo, or a typographic cover set in the post's palette. Sizes itself with container units. */
 export function BookCover({ title, author, uri, palette, width, elevation = 'low', transitionKey, heroFor }: Props) {
-  const active = useActiveCover();
+  const active = useAtomValue(activeCoverAtom);
   const named = !!active && ((transitionKey && active.key === transitionKey) || (heroFor && active.postId === heroFor));
   const style: CSSProperties = {
     width,

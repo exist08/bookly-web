@@ -5,12 +5,12 @@ import { usePostActions } from './PostActions';
 import { useProfile, useUserPosts } from '../hooks/queries';
 import { compactNumber } from '../utils/format';
 import { shareProfile } from '../utils/share';
-import { go } from '../store/transition';
+import { go } from '../navigation/transition';
 
 export function ProfileView({ userId, isMe, scope, header }: { userId: string; isMe: boolean; scope: string; header: ReactNode }) {
   const profile = useProfile(userId);
   const posts = useUserPosts(userId);
-  const actions = usePostActions();
+  const openActions = usePostActions();
   const list = useMemo(() => posts.data?.pages.flatMap(p => p.items) ?? [], [posts.data]);
   const user = profile.data?.user;
   const stats = profile.data?.stats;
@@ -88,7 +88,7 @@ export function ProfileView({ userId, isMe, scope, header }: { userId: string; i
             ))}
           </div>
         ) : list.length ? (
-          <ShelfGrid posts={list} scope={scope} onMore={isMe ? p => actions.open(p) : undefined} />
+          <ShelfGrid posts={list} scope={scope} onMore={isMe ? p => openActions({ post: p }) : undefined} />
         ) : isMe ? (
           <EmptyShelf
             title={

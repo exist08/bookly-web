@@ -8,7 +8,8 @@ import {
 } from '@tanstack/react-query';
 import * as api from '../data/api';
 import type { Page, PostInput, PostView, ProfileInput, User, VoteValue } from '../types/models';
-import { session, useSession } from '../store/session';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { userIdAtom } from '../state/session';
 
 export const qk = {
   me: ['me'] as const,
@@ -42,7 +43,7 @@ function patchPost(qc: QueryClient, id: string, fn: (p: PostView) => PostView | 
 }
 
 export function useMe() {
-  const { userId } = useSession();
+  const userId = useAtomValue(userIdAtom);
   return useQuery({ queryKey: qk.me, queryFn: api.getMe, enabled: !!userId });
 }
 
@@ -162,10 +163,11 @@ export function useUpdateProfile() {
 
 export function useDeleteAccount() {
   const qc = useQueryClient();
+  const setUserId = useSetAtom(userIdAtom);
   return useMutation({
     mutationFn: api.deleteMe,
     onSuccess: () => {
-      session.setUser(null);
+      setUserId(null);
       qc.clear();
     },
   });
@@ -174,9 +176,10 @@ export function useDeleteAccount() {
 /** Auth mutations. The API returns the user; we prime the cache, then flip the session so the navigator swaps stacks without a loading flash. */
 export function useAuth() {
   const qc = useQueryClient();
+  const setUserId = useSetAtom(userIdAtom);
   const finish = (user: User) => {
     qc.setQueryData(qk.me, user);
-    session.setUser(user.id);
+    setUserId(user.id);
   };
   return {
     signIn: useMutation({ mutationFn: (v: { email: string; password: string }) => api.signIn(v.email, v.password), onSuccess: finish }),
@@ -185,7 +188,7 @@ export function useAuth() {
     signOut: useMutation({
       mutationFn: api.signOut,
       onSuccess: () => {
-        session.setUser(null);
+        setUserId(null);
         qc.clear();
       },
     }),

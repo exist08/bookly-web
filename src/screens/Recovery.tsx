@@ -3,9 +3,9 @@ import { useSearchParams } from 'react-router';
 import { useMutation } from '@tanstack/react-query';
 import { Icon } from '../components/Icon';
 import { Button, Em, TextField, TopBar, useCountdown } from '../components/ui';
-import { toast } from '../components/Toast';
+import { toast } from '../state/toast';
 import { requestPasswordReset, resetPassword } from '../data/api';
-import { go } from '../store/transition';
+import { go } from '../navigation/transition';
 import { AuthLayout } from './AuthLayout';
 
 export function ForgotPassword() {

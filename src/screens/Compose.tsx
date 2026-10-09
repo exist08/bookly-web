@@ -4,12 +4,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { BookCover } from '../components/BookCover';
 import { Icon } from '../components/Icon';
 import { Button, Em, ModalBar } from '../components/ui';
-import { toast } from '../components/Toast';
+import { toast } from '../state/toast';
 import { findCachedPost } from '../hooks/cache';
 import { useCreatePost, useUpdatePost } from '../hooks/queries';
 import { COVER_PALETTES } from '../data/seed';
 import { ApiError } from '../data/api';
-import { go, back } from '../store/transition';
+import { go, back } from '../navigation/transition';
 import { pickImage } from '../utils/image';
 import { compactNumber, timeAgoLong } from '../utils/format';
 

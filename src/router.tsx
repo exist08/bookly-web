@@ -1,8 +1,9 @@
 import { Navigate, Outlet, createBrowserRouter } from 'react-router';
 import { AppShell } from './components/AppShell';
-import { PostActionsProvider } from './components/PostActions';
+import { PostActionsSheet } from './components/PostActions';
 import { useMe } from './hooks/queries';
-import { useSession } from './store/session';
+import { useAtomValue } from 'jotai';
+import { hasOnboardedAtom, userIdAtom } from './state/session';
 import { Onboarding } from './screens/Onboarding';
 import { Welcome } from './screens/Welcome';
 import { Auth } from './screens/Auth';
@@ -17,7 +18,8 @@ import { NotFound } from './screens/NotFound';
 
 /** Where a visitor belongs right now: onboarding → welcome → profile setup → feed. */
 function useHome(): string | null {
-  const { userId, hasOnboarded } = useSession();
+  const userId = useAtomValue(userIdAtom);
+  const hasOnboarded = useAtomValue(hasOnboardedAtom);
   const me = useMe();
   if (!userId) {
     return hasOnboarded ? '/welcome' : '/onboarding';
@@ -59,9 +61,10 @@ function RequireUser() {
     return <Navigate to={home} replace />;
   }
   return (
-    <PostActionsProvider>
+    <>
       <AppShell />
-    </PostActionsProvider>
+      <PostActionsSheet />
+    </>
   );
 }
 

@@ -1,5 +1,5 @@
 import { Button, Em } from '../components/ui';
-import { go } from '../store/transition';
+import { go } from '../navigation/transition';
 
 export function NotFound() {
   return (

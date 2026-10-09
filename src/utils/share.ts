@@ -1,4 +1,4 @@
-import { toast } from '../components/Toast';
+import { toast } from '../state/toast';
 import type { PostView, User } from '../types/models';
 
 const origin = () => window.location.origin;

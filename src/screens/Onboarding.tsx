@@ -3,8 +3,9 @@ import { BookCover } from '../components/BookCover';
 import { Icon } from '../components/Icon';
 import { Avatar, Button, Em, Wordmark } from '../components/ui';
 import { PALETTES } from '../data/seed';
-import { session } from '../store/session';
-import { go } from '../store/transition';
+import { useSetAtom } from 'jotai';
+import { hasOnboardedAtom } from '../state/session';
+import { go } from '../navigation/transition';
 
 type Slide = { key: string; title: ReactNode; body: string; tint: string; art: ReactNode };
 
@@ -96,8 +97,9 @@ export function Onboarding() {
     return () => el.removeEventListener('scroll', on);
   }, []);
 
+  const setOnboarded = useSetAtom(hasOnboardedAtom);
   const finish = () => {
-    session.finishOnboarding();
+    setOnboarded(true);
     go('/welcome', { dir: 'fade', replace: true });
   };
   const next = () => track.current?.scrollTo({ left: (index + 1) * track.current.clientWidth, behavior: 'smooth' });

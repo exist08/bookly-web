@@ -9,8 +9,9 @@ import { Avatar, Button, IconButton } from '../components/ui';
 import { VotePill } from '../components/VotePill';
 import { findCachedPost } from '../hooks/cache';
 import { usePost, useUserPosts } from '../hooks/queries';
-import { useSession } from '../store/session';
-import { back, go } from '../store/transition';
+import { useAtomValue } from 'jotai';
+import { userIdAtom } from '../state/session';
+import { back, go } from '../navigation/transition';
 import { sharePost } from '../utils/share';
 import { timeAgoLong } from '../utils/format';
 
@@ -25,8 +26,8 @@ export function PostDetail() {
   const initial = useMemo(() => findCachedPost(qc, id), [qc, id]);
   const { data: post, isError, error } = usePost(id, initial);
   const more = useUserPosts(post?.authorId);
-  const { userId } = useSession();
-  const actions = usePostActions();
+  const userId = useAtomValue(userIdAtom);
+  const openActions = usePostActions();
   const others = useMemo(() => (more.data?.pages.flatMap(p => p.items) ?? []).filter(p => p.id !== id).slice(0, 10), [more.data, id]);
 
   useEffect(() => {
@@ -62,7 +63,7 @@ export function PostDetail() {
         <div className="hero">
           <div className="hero-bar">
             <IconButton icon="back" label="Back" glass onClick={() => back('/feed')} />
-            <IconButton icon="more" label="More options" glass onClick={() => actions.open(post, { onDeleted: () => back('/feed') })} />
+            <IconButton icon="more" label="More options" glass onClick={() => openActions({ post, onDeleted: () => back('/feed') })} />
           </div>
           <div className="hero__tint" style={{ background: post.coverPalette.bg }} />
           <span className="hero__ring" style={{ width: 340, height: 340, top: 'calc(50% - 150px)' }} />

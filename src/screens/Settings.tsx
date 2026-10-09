@@ -2,12 +2,13 @@ import { useState, type ReactNode } from 'react';
 import { AvatarPicker } from '../components/AvatarPicker';
 import { GoogleMark, Icon, type IconName } from '../components/Icon';
 import { Button, Em, ModalBar, TextField, TopBar } from '../components/ui';
-import { toast } from '../components/Toast';
+import { toast } from '../state/toast';
 import { useAuth, useDeleteAccount, useMe, useProfile, useUpdateProfile } from '../hooks/queries';
 import { usernameMessage, useUsernameCheck } from '../hooks/useUsernameCheck';
 import { ApiError, requestPasswordReset } from '../data/api';
-import { useTheme, type ThemeMode } from '../theme/ThemeProvider';
-import { back, go } from '../store/transition';
+import { useAtom } from 'jotai';
+import { themeModeAtom, type ThemeMode } from '../state/theme';
+import { back, go } from '../navigation/transition';
 import { compactNumber } from '../utils/format';
 
 const MODES: { mode: ThemeMode; label: string; icon: IconName }[] = [
@@ -19,7 +20,7 @@ const MODES: { mode: ThemeMode; label: string; icon: IconName }[] = [
 /** Edit profile + appearance + account, like the app's settings modal. */
 export function Settings() {
   const { data: me } = useMe();
-  const { mode, setMode } = useTheme();
+  const [mode, setMode] = useAtom(themeModeAtom);
   const update = useUpdateProfile();
   const { signOut } = useAuth();
   const [name, setName] = useState(me?.displayName ?? '');

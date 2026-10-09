@@ -1,6 +1,6 @@
 import { useEffect, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { GoogleMark, Icon, type IconName } from './Icon';
-import { back } from '../store/transition';
+import { back } from '../navigation/transition';
 import { initials } from '../utils/format';
 import type { User } from '../types/models';
 

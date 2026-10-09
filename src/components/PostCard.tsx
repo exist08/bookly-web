@@ -4,7 +4,7 @@ import { Icon } from './Icon';
 import { Avatar, IconButton } from './ui';
 import { VotePill } from './VotePill';
 import { usePostActions } from './PostActions';
-import { go } from '../store/transition';
+import { go } from '../navigation/transition';
 import { sharePost } from '../utils/share';
 import { timeAgo } from '../utils/format';
 import type { PostView } from '../types/models';
@@ -14,7 +14,7 @@ export function openPost(post: PostView, scope: string) {
 }
 
 function PostCardImpl({ post }: { post: PostView }) {
-  const actions = usePostActions();
+  const openActions = usePostActions();
   const open = () => openPost(post, 'feed');
   return (
     <article className="post">
@@ -28,7 +28,7 @@ function PostCardImpl({ post }: { post: PostView }) {
             </span>
           </span>
         </button>
-        <IconButton icon="more" label="More options" color="var(--muted)" onClick={() => actions.open(post)} />
+        <IconButton icon="more" label="More options" color="var(--muted)" onClick={() => openActions({ post })} />
       </div>
 
       <button type="button" className="post__stage" onClick={open} aria-label={`Open ${post.bookTitle}`}>

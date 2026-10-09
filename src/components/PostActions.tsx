@@ -1,48 +1,36 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { BookCover } from './BookCover';
 import { Icon, type IconName } from './Icon';
 import { Button } from './ui';
 import { Dialog, Sheet } from './Sheet';
-import { toast } from './Toast';
+import { toast } from '../state/toast';
 import { useDeletePost } from '../hooks/queries';
-import { useSession } from '../store/session';
-import { go } from '../store/transition';
+import { userIdAtom } from '../state/session';
+import { closePostActionsAtom, openPostActionsAtom, postActionsAtom } from '../state/postActions';
+import { go } from '../navigation/transition';
 import { sharePost } from '../utils/share';
 import { compactNumber, timeAgoLong } from '../utils/format';
-import type { PostView } from '../types/models';
 
-interface Ctx {
-  open: (post: PostView, opts?: { onDeleted?: () => void }) => void;
-}
-const C = createContext<Ctx>({ open: () => {} });
-export const usePostActions = () => useContext(C);
+/** Open the "…" sheet for a post from anywhere: const open = usePostActions(); open({ post, onDeleted }). */
+export const usePostActions = () => useSetAtom(openPostActionsAtom);
 
-/** One "…" sheet for every post. Owners: Edit / Share / Delete (confirmed). Others: Share / View shelf. */
-export function PostActionsProvider({ children }: { children: ReactNode }) {
-  const { userId } = useSession();
-  const [post, setPost] = useState<PostView | null>(null);
-  const [sheet, setSheet] = useState(false);
+/** One "…" sheet for every post, mounted once in the signed-in shell. Owners: Edit / Share / Delete (confirmed). Others: Share / View shelf. */
+export function PostActionsSheet() {
+  const userId = useAtomValue(userIdAtom);
+  const { open, post, onDeleted } = useAtomValue(postActionsAtom);
+  const close = useSetAtom(closePostActionsAtom);
   const [confirm, setConfirm] = useState(false);
-  const onDeleted = useRef<(() => void) | undefined>(undefined);
   const del = useDeletePost();
-
-  const open = useCallback<Ctx['open']>((p, opts) => {
-    setPost(p);
-    onDeleted.current = opts?.onDeleted;
-    setSheet(true);
-  }, []);
-  const value = useMemo(() => ({ open }), [open]);
   const mine = !!post && post.authorId === userId;
-  const close = () => setSheet(false);
   const then = (fn: () => void) => {
     close();
     setTimeout(fn, 180);
   };
 
   return (
-    <C.Provider value={value}>
-      {children}
-      <Sheet open={sheet} onClose={close} label="Post options">
+    <>
+      <Sheet open={open} onClose={close} label="Post options">
         {post ? (
           <div className="stack gap-14">
             <div className="row gap-14 hairline-b" style={{ padding: '4px 8px 14px' }}>
@@ -94,7 +82,7 @@ export function PostActionsProvider({ children }: { children: ReactNode }) {
                     onSuccess: () => {
                       setConfirm(false);
                       toast.success('Post deleted');
-                      onDeleted.current?.();
+                      onDeleted?.();
                     },
                     onError: e => toast.error((e as Error).message),
                   })
@@ -105,7 +93,7 @@ export function PostActionsProvider({ children }: { children: ReactNode }) {
           </>
         ) : null}
       </Dialog>
-    </C.Provider>
+    </>
   );
 }
 

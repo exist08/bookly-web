@@ -1,8 +1,8 @@
 import { Button, Em, Wordmark } from '../components/ui';
 import { GoogleSignInButton } from '../components/GoogleSignInButton';
-import { toast } from '../components/Toast';
+import { toast } from '../state/toast';
 import { useAuth } from '../hooks/queries';
-import { go } from '../store/transition';
+import { go } from '../navigation/transition';
 import { AuthLayout, CoverFan } from './AuthLayout';
 
 export function Welcome() {
